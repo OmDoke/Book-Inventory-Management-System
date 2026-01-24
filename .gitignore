@@ -30,3 +30,4 @@ lerna-debug.log*
 
 # Scripts
 generate-credentials.js
+api/debug_pagination.js

@@ -32,7 +32,7 @@ api.interceptors.response.use((response) => response, (error) => {
     return Promise.reject(error);
 });
 
-export const getBooks = (page = 1, limit = 16) => api.get(`/books?page=${page}&limit=${limit}`);
+export const getBooks = (page = 1, limit = 12) => api.get(`/books?page=${page}&limit=${limit}`);
 export const getBook = (id) => api.get(`/books/${id}`);
 export const loginAdmin = (credentials) => api.post('/admin/login', credentials);
 export const createBook = (data) => api.post('/books', data);

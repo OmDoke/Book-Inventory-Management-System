@@ -9,12 +9,12 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
         try {
             const page = parseInt(req.query.page) || 1;
-            const limit = parseInt(req.query.limit) || 16;
+            const limit = parseInt(req.query.limit) || 12;
             const skip = (page - 1) * limit;
 
             const totalBooks = await Book.countDocuments({});
             const books = await Book.find({})
-                .sort({ createdAt: -1 })
+                .sort({ createdAt: -1, _id: 1 })
                 .skip(skip)
                 .limit(limit);
 
