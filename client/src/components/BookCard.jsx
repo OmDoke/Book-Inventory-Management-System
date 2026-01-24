@@ -9,7 +9,8 @@ const getDisplayUrl = (url) => {
         if (url.includes('drive.google.com')) {
             const idMatch = url.match(/\/d\/(.+?)(\/|$)/);
             if (idMatch && idMatch[1]) {
-                return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+                // Use the thumbnail link which is more reliable for embedding
+                return `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=w300`;
             }
         }
     } catch (e) {

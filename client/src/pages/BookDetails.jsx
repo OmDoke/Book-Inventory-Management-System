@@ -3,6 +3,22 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getBook } from '../services/api';
 import { Box, Typography, Button, Paper, Grid, CircularProgress, Alert } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import defaultImage from '../assets/default.jpg';
+
+const getDisplayUrl = (url) => {
+    if (!url) return null;
+    try {
+        if (url.includes('drive.google.com')) {
+            const idMatch = url.match(/\/d\/(.+?)(\/|$)/);
+            if (idMatch && idMatch[1]) {
+                return `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=w500`;
+            }
+        }
+    } catch (e) {
+        console.error("Error parsing URL", e);
+    }
+    return url;
+};
 
 const BookDetails = () => {
     const { id } = useParams();
@@ -39,10 +55,14 @@ const BookDetails = () => {
             <Grid container spacing={4}>
                 <Grid item xs={12} md={4}>
                     <img
-                        src={book.posterUrl || 'https://via.placeholder.com/300'}
+                        src={getDisplayUrl(book.posterUrl) || defaultImage}
                         alt={book.title}
                         style={{ width: '100%', maxHeight: '500px', objectFit: 'contain', backgroundColor: '#f0f0f0' }}
-                        onError={(e) => { e.target.src = 'https://via.placeholder.com/300'; }}
+                        onError={(e) => {
+                            if (e.target.src !== defaultImage) {
+                                e.target.src = defaultImage;
+                            }
+                        }}
                     />
                 </Grid>
                 <Grid item xs={12} md={8}>
