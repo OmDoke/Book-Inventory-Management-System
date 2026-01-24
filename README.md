@@ -18,17 +18,45 @@ A production-ready, full-stack Book Inventory Management System built for **Verc
 ## 📂 Project Structure
 
 ```bash
-/
-├── api/                  # Serverless Backend functions
-│   ├── books/            # Public & Protected Book APIs
-│   ├── admin/            # Admin Authentication
-│   └── _lib/             # Shared logic (DB, Auth, Validation)
-├── client/               # React Frontend Application
+├── api/
+│   ├── _lib/
+│   │   ├── models/
+│   │   │   └── book.js
+│   │   ├── auth.js
+│   │   ├── db.js
+│   │   └── validate.js
+│   ├── admin/
+│   │   └── login.js
+│   └── books/
+│       ├── [id].js
+│       └── index.js
+├── client/
 │   ├── src/
-│   │   ├── pages/        # Route components (Home, Details, Admin)
-│   │   ├── components/   # Reusable UI components
-│   │   └── services/     # API Axios service
-└── ...
+│   │   ├── assets/
+│   │   │   └── default.jpg
+│   │   ├── components/
+│   │   │   ├── BookCard.jsx
+│   │   │   ├── BookTable.jsx
+│   │   │   └── Footer.jsx
+│   │   ├── pages/
+│   │   │   ├── AdminDashboard.jsx
+│   │   │   ├── AdminLogin.jsx
+│   │   │   ├── BookDetails.jsx
+│   │   │   └── Home.jsx
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   └── vite.config.js
+├── .gitignore
+├── package-lock.json
+├── package.json
+└── README.md
+
 ```
 
 ## 🛠️ Getting Started
@@ -46,7 +74,7 @@ MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/dbname
 
 # Security
 JWT_SECRET=your_super_secret_key
-ADMIN_USERNAME=admin
+ADMIN_USERNAME=
 ADMIN_PASSWORD_HASH=your_bcrypt_hash
 ```
 
