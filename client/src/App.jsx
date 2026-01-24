@@ -29,7 +29,7 @@ function App() {
         setLoading(true);
         setError(null);
         try {
-            const response = await getBooks(currPage);
+            const response = await getBooks(currPage, 12);
             const { data, totalPages } = response.data;
             setBooks(data);
             setTotalPages(totalPages);
