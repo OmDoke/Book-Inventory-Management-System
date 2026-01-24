@@ -71,7 +71,7 @@ const BookDetails = () => {
 
                     <Box sx={{ my: 2 }}>
                         <Typography variant="body1"><strong>Publisher:</strong> {book.publisher}</Typography>
-                        <Typography variant="body1"><strong>Published:</strong> {new Date(book.publishedDate).toLocaleDateString()}</Typography>
+                        <Typography variant="body1"><strong>Published:</strong> {book.publishedDate ? new Date(book.publishedDate).toLocaleDateString() : 'N/A'}</Typography>
                         <Typography variant="body1"><strong>Genre:</strong> {book.genre}</Typography>
                         <Typography variant="body1"><strong>Price:</strong> ${book.price}</Typography>
                         <Typography variant="body1"><strong>Stock:</strong> {book.stockCount}</Typography>
