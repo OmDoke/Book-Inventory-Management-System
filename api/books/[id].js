@@ -1,7 +1,7 @@
-import dbConnect from '../_lib/db';
-import Book from '../_lib/models/book';
-import { verifyToken } from '../_lib/auth';
-import { validateBookInput } from '../_lib/validate';
+import dbConnect from '../_lib/db.js';
+import Book from '../_lib/models/book.js';
+import { verifyToken } from '../_lib/auth.js';
+import { validateBookInput } from '../_lib/validate.js';
 
 export default async function handler(req, res) {
     const { id } = req.query;
