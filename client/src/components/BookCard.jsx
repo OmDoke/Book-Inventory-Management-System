@@ -1,5 +1,22 @@
 import { Card, CardContent, CardMedia, Typography, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
+import defaultImage from '../assets/default.jpg';
+
+const getDisplayUrl = (url) => {
+    if (!url) return null;
+    try {
+        // Handle Google Drive links
+        if (url.includes('drive.google.com')) {
+            const idMatch = url.match(/\/d\/(.+?)(\/|$)/);
+            if (idMatch && idMatch[1]) {
+                return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+            }
+        }
+    } catch (e) {
+        console.error("Error parsing URL", e);
+    }
+    return url;
+};
 
 const BookCard = ({ book }) => {
     return (
@@ -8,10 +25,14 @@ const BookCard = ({ book }) => {
                 <CardMedia
                     component="img"
                     height="140"
-                    // Use placeholder if posterUrl is invalid or missing, checking simple startWith or null
-                    image={book.posterUrl || 'https://via.placeholder.com/150'}
+                    // Use placeholder if posterUrl is invalid or missing
+                    image={getDisplayUrl(book.posterUrl) || defaultImage}
                     alt={book.title}
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/150'; }} // Fallback
+                    onError={(e) => {
+                        if (e.target.src !== defaultImage) {
+                            e.target.src = defaultImage;
+                        }
+                    }} // Fallback
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h6" component="div" noWrap>
