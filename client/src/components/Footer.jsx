@@ -26,10 +26,10 @@ const Footer = () => {
                     <IconButton aria-label="github" color="inherit" component={Link} href="https://github.com/OmDoke" target="_blank" rel="noopener noreferrer">
                         <GitHubIcon />
                     </IconButton>
-                    <IconButton aria-label="linkedin" color="inherit" component={Link} href="https://linkedin.com/in/om-doke" target="_blank" rel="noopener noreferrer">
+                    <IconButton aria-label="linkedin" color="inherit" component={Link} href="https://www.linkedin.com/in/onkar-doke" target="_blank" rel="noopener noreferrer">
                         <LinkedInIcon />
                     </IconButton>
-                    <IconButton aria-label="email" color="inherit" component={Link} href="mailto:omdoke@example.com">
+                    <IconButton aria-label="email" color="inherit" component={Link} href="mailto:onkardoke9696@gmail.com">
                         <EmailIcon />
                     </IconButton>
                 </Box>
