@@ -21,7 +21,7 @@ const Home = ({ books, loading, error, page, setPage, totalPages }) => {
             ) : (
                 <Grid container spacing={3}>
                     {books.map((book) => (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={book._id}>
+                        <Grid item xs={12} sm={6} md={4} lg={4} key={book._id}>
                             <BookCard book={book} />
                         </Grid>
                     ))}

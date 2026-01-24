@@ -25,7 +25,7 @@ const BookCard = ({ book }) => {
             <CardActionArea component={Link} to={`/books/${book._id}`} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <CardMedia
                     component="img"
-                    height="140"
+                    height="200"
                     // Use placeholder if posterUrl is invalid or missing
                     image={getDisplayUrl(book.posterUrl) || defaultImage}
                     alt={book.title}
