@@ -1,7 +1,7 @@
 {
     "name": "book-inventory-api",
     "version": "1.0.0",
-    "main": "api/index.js",
+    "main": "api/books/index.js",
     "type": "module",
     "scripts": {
         "start": "vercel dev",
