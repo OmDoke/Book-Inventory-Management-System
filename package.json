@@ -1,0 +1,17 @@
+{
+    "name": "book-inventory-api",
+    "version": "1.0.0",
+    "main": "api/index.js",
+    "type": "module",
+    "scripts": {
+        "start": "vercel dev",
+        "backend": "vercel dev"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.6.1"
+    }
+}

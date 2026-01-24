@@ -4,6 +4,7 @@
 /build
 /tmp
 
+/client/node_modules
 # Logs
 logs
 *.log
@@ -23,3 +24,9 @@ lerna-debug.log*
 # temp directory
 .temp
 .tmp
+
+# Vercel
+.vercel
+
+# Scripts
+generate-credentials.js
