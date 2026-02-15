@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { getBooks } from './services/api';
+import { useState } from 'react';
+import { useBooks } from './hooks/useBooks';
 import { Container, AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Home from './pages/Home';
@@ -9,7 +9,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import Footer from './components/Footer';
 
-import { Book } from './types';
+
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -21,38 +21,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-    const [books, setBooks] = useState<Book[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState<number>(1);
-    const [totalPages, setTotalPages] = useState<number>(1);
+    const { data: responseData, isLoading: loading, error, isError } = useBooks(page);
 
-    const fetchBooks = async (currPage: number) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await getBooks(currPage, 12);
-            // Validation: Ensure response is JSON and contains expected data structure
-            if (!response.data || typeof response.data !== 'object') {
-                throw new Error('Invalid server response format');
-            }
-            const { data, totalPages } = response.data;
-            if (!Array.isArray(data)) {
-                 throw new Error('Received invalid data from server');
-            }
-            setBooks(data);
-            setTotalPages(totalPages);
-        } catch (err) {
-            console.error(err);
-            setError('Failed to fetch books. Please try again later.');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const books = responseData?.data || [];
+    const totalPages = responseData?.totalPages || 1;
 
-    useEffect(() => {
-        fetchBooks(page);
-    }, [page]);
+    // Error handling is now managed by React Query's error state
+    // We can extract the error message if needed
+    const errorMessage = isError ? (error as Error).message : null;
 
     return (
         <Router>
@@ -77,7 +54,7 @@ function App() {
                                 <Home
                                     books={books}
                                     loading={loading}
-                                    error={error}
+                                    error={errorMessage}
                                     page={page}
                                     setPage={setPage}
                                     totalPages={totalPages}
