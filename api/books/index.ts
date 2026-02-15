@@ -1,7 +1,8 @@
 import dbConnect from '../_lib/db.js';
 import Book from '../_lib/models/book.js';
 import { verifyToken } from '../_lib/auth.js';
-import { validateBookInput } from '../_lib/validate.js';
+import { validate } from '../_lib/middleware/validate.js';
+import { BookSchema } from '../_lib/schemas.js';
 
 export default async function handler(req, res) {
     await dbConnect();
@@ -29,28 +30,42 @@ export default async function handler(req, res) {
             return res.status(500).json({ message: 'Internal Server Error' });
         }
     } else if (req.method === 'POST') {
-        // Admin Only
-        const user = verifyToken(req);
-        if (!user || user.role !== 'admin') {
-            return res.status(401).json({ message: 'Unauthorized' });
-        }
+        const validator = validate(BookSchema);
+        // We need to await the validator as a promise wrapper or use it inline if it was express middleware
+        // Since this is a Vercel/Next.js style handler (req, res), and 'validate' is written as Express middleware (req, res, next)
+        // We need to adapt it. 
+        // My validate middleware returns (req, res, next) => void.
 
-        // Validation
-        const validationErrors = validateBookInput(req.body);
-        if (validationErrors) {
-            return res.status(400).json({ message: 'Validation Error', errors: validationErrors });
-        }
+        // Let's adapt it inline for simplicity in this handler style, or wrap it.
+        // Express middleware style: validate(schema)(req, res, next)
 
-        try {
-            const book = await Book.create(req.body);
-            return res.status(201).json(book);
-        } catch (error) {
-            console.error(error);
-            if (error.name === 'ValidationError') {
-                return res.status(400).json({ message: error.message });
-            }
-            return res.status(500).json({ message: 'Internal Server Error' });
-        }
+        return new Promise((resolve) => {
+            validator(req, res, async (err) => {
+                if (err) return resolve(undefined); // Error handled by middleware or next(err)
+
+                // Validated. Proceed to Admin Check & Logic
+                // Admin Only
+                const user = verifyToken(req);
+                if (!user || user.role !== 'admin') {
+                    return res.status(401).json({ message: 'Unauthorized' });
+                }
+
+                try {
+                    const book = await Book.create(req.body);
+                    res.status(201).json(book);
+                    resolve(undefined);
+                } catch (error) {
+                    console.error(error);
+                    if (error.name === 'ValidationError') {
+                        res.status(400).json({ message: error.message });
+                    } else {
+                        res.status(500).json({ message: 'Internal Server Error' });
+                    }
+                    resolve(undefined);
+                }
+            });
+        });
+
     } else {
         return res.status(405).json({ message: 'Method Not Allowed' });
     }

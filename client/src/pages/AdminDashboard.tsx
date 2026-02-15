@@ -1,24 +1,14 @@
 import { useState, useEffect } from 'react';
 import { getBooks, createBook, updateBook, deleteBook } from '../services/api';
 import BookTable from '../components/BookTable';
+import BookForm from '../components/BookForm';
+import { BookFormData } from '../schemas';
 import {
     Box, Typography, Button, Container, Pagination,
-    Dialog, DialogTitle, DialogContent, DialogActions, TextField,
+    Dialog, DialogTitle, DialogContent,
     Alert, CircularProgress, Snackbar
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-
-const initialFormState = {
-    title: '',
-    authorName: '',
-    publishedDate: '',
-    publisher: '',
-    posterUrl: '',
-    overview: '',
-    genre: '',
-    price: 0,
-    stockCount: 0
-};
 
 const AdminDashboard = () => {
     const [books, setBooks] = useState([]);
@@ -29,22 +19,21 @@ const AdminDashboard = () => {
     // Dialog State
     const [open, setOpen] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
-    const [currentId, setCurrentId] = useState(null);
-    const [formData, setFormData] = useState(initialFormState);
+    const [currentId, setCurrentId] = useState<string | null>(null);
+    const [currentBook, setCurrentBook] = useState<Partial<BookFormData> | undefined>(undefined);
 
     // Feedback State
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
 
-    const fetchBooks = async (currPage) => {
+    const fetchBooks = async (currPage: number) => {
         setLoading(true);
         try {
-            // Fetch more items for admin table if possible, or stick to 16
             const response = await getBooks(currPage, 20);
             const { data, totalPages } = response.data;
             setBooks(data);
             setTotalPages(totalPages);
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
             setError('Failed to fetch books.');
         } finally {
@@ -56,19 +45,29 @@ const AdminDashboard = () => {
         fetchBooks(page);
     }, [page]);
 
-    const handleOpen = (book = null) => {
+    const handleOpen = (book: any = null) => {
+        setError(null);
         if (book) {
             setIsEdit(true);
             setCurrentId(book._id);
-            // Format date for input if exists
-            const formBook = { ...book };
-            if (formBook.publishedDate) {
-                formBook.publishedDate = new Date(formBook.publishedDate).toISOString().split('T')[0];
-            }
-            setFormData(formBook);
+            
+            // Map API data to Form Data
+            setCurrentBook({
+                title: book.title,
+                authorName: book.authorName,
+                isbn: book.isbn || '',
+                publisher: book.publisher,
+                publishedDate: book.publishedDate ? new Date(book.publishedDate).toISOString().split('T')[0] : '',
+                genre: book.genre,
+                price: book.price,
+                stockCount: book.stockCount,
+                overview: book.overview,
+                posterUrl: book.posterUrl || ''
+            });
         } else {
             setIsEdit(false);
-            setFormData(initialFormState);
+            setCurrentId(null);
+            setCurrentBook(undefined);
         }
         setOpen(true);
     };
@@ -76,35 +75,28 @@ const AdminDashboard = () => {
     const handleClose = () => {
         setOpen(false);
         setError(null);
+        setCurrentBook(undefined); // Reset form data
     };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: (name === 'price' || name === 'stockCount') ? Number(value) : value
-        }));
-    };
-
-    const handleSubmit = async () => {
+    const handleFormSubmit = async (data: BookFormData) => {
         try {
-            if (isEdit) {
-                await updateBook(currentId, formData);
+            if (isEdit && currentId) {
+                await updateBook(currentId, data);
                 setSuccess('Book updated successfully');
             } else {
-                await createBook(formData);
+                await createBook(data);
                 setSuccess('Book created successfully');
             }
             handleClose();
             fetchBooks(page);
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            const msg = err.response?.data?.message || 'Operation failed';
+            const msg = err.response?.data?.message || err.response?.data?.errors?.[0]?.message || 'Operation failed';
             setError(msg);
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this book?')) {
             try {
                 await deleteBook(id);
@@ -144,22 +136,16 @@ const AdminDashboard = () => {
                 <DialogTitle>{isEdit ? 'Edit Book' : 'Add New Book'}</DialogTitle>
                 <DialogContent>
                     {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                    <TextField margin="dense" name="title" label="Title" fullWidth value={formData.title} onChange={handleChange} required />
-                    <TextField margin="dense" name="authorName" label="Author Name" fullWidth value={formData.authorName} onChange={handleChange} required />
-                    <TextField margin="dense" name="publishedDate" label="Published Date" type="date" fullWidth InputLabelProps={{ shrink: true }} value={formData.publishedDate} onChange={handleChange} />
-                    <TextField margin="dense" name="publisher" label="Publisher" fullWidth value={formData.publisher} onChange={handleChange} />
-                    <TextField margin="dense" name="genre" label="Genre" fullWidth value={formData.genre} onChange={handleChange} />
-                    <TextField margin="dense" name="posterUrl" label="Poster URL" fullWidth value={formData.posterUrl} onChange={handleChange} />
-                    <TextField margin="dense" name="overview" label="Overview" fullWidth multiline rows={4} value={formData.overview} onChange={handleChange} />
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                        <TextField margin="dense" name="price" label="Price" type="number" fullWidth value={formData.price} onChange={handleChange} />
-                        <TextField margin="dense" name="stockCount" label="Stock Count" type="number" fullWidth value={formData.stockCount} onChange={handleChange} />
-                    </Box>
+                    
+                    {/* Render Form only when open to reset state properly or pass key */}
+                    {open && (
+                        <BookForm 
+                            defaultValues={currentBook} 
+                            onSubmit={handleFormSubmit}
+                            submitLabel={isEdit ? 'Update' : 'Create'}
+                        />
+                    )}
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleSubmit} variant="contained">{isEdit ? 'Update' : 'Create'}</Button>
-                </DialogActions>
             </Dialog>
         </Container>
     );
