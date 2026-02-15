@@ -19,7 +19,15 @@ const getDisplayUrl = (url) => {
     return url;
 };
 
-const BookCard = ({ book }) => {
+import { Book } from '../types';
+
+// ... (keep getDisplayUrl)
+
+interface BookCardProps {
+    book: Book;
+}
+
+const BookCard = ({ book }: BookCardProps) => {
     return (
         <Card sx={{ maxWidth: 345, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardActionArea component={Link} to={`/books/${book._id}`} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>

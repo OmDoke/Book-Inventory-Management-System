@@ -20,12 +20,18 @@ const getDisplayUrl = (url) => {
     return url;
 };
 
+import { Book } from '../types';
+
+// ... (keep imports)
+
+// ... (keep getDisplayUrl)
+
 const BookDetails = () => {
-    const { id } = useParams();
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [book, setBook] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [book, setBook] = useState<Book | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchBook = async () => {

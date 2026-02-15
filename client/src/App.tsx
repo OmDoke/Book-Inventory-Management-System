@@ -9,8 +9,10 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import Footer from './components/Footer';
 
+import { Book } from './types';
+
 // Protected Route Component
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem('adminToken');
     if (!token) {
         return <Navigate to="/admin/login" replace />;
@@ -19,18 +21,25 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
-    const [books, setBooks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [books, setBooks] = useState<Book[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState<number>(1);
+    const [totalPages, setTotalPages] = useState<number>(1);
 
-    const fetchBooks = async (currPage) => {
+    const fetchBooks = async (currPage: number) => {
         setLoading(true);
         setError(null);
         try {
             const response = await getBooks(currPage, 12);
+            // Validation: Ensure response is JSON and contains expected data structure
+            if (!response.data || typeof response.data !== 'object') {
+                throw new Error('Invalid server response format');
+            }
             const { data, totalPages } = response.data;
+            if (!Array.isArray(data)) {
+                 throw new Error('Received invalid data from server');
+            }
             setBooks(data);
             setTotalPages(totalPages);
         } catch (err) {

@@ -1,9 +1,19 @@
 import BookCard from '../components/BookCard';
+import { Book } from '../types';
 import { Grid, Typography, Pagination, Box, CircularProgress, Alert } from '@mui/material';
 
-const Home = ({ books, loading, error, page, setPage, totalPages }) => {
+interface HomeProps {
+    books: Book[];
+    loading: boolean;
+    error: string | null;
+    page: number;
+    setPage: (page: number) => void;
+    totalPages: number;
+}
 
-    const handlePageChange = (event, value) => {
+const Home = ({ books, loading, error, page, setPage, totalPages }: HomeProps) => {
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
 
@@ -16,7 +26,7 @@ const Home = ({ books, loading, error, page, setPage, totalPages }) => {
                 Book Library
             </Typography>
 
-            {books.length === 0 ? (
+            {books?.length === 0 ? (
                 <Typography>No books found.</Typography>
             ) : (
                 <Grid container spacing={3}>

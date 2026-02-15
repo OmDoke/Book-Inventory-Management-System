@@ -1,12 +1,18 @@
-# Nestjs specific
-/dist
-/node_modules
-/build
-/tmp
+# Dependencies
+node_modules/
+client/node_modules/
 
-/client/node_modules
+# Build Output
+dist/
+client/dist/
+build/
+tmp/
+
+# Vite
+client/.vite/
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 pnpm-debug.log*
@@ -14,20 +20,26 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# dotenv environment variable files
+# Environment Variables
 .env
 .env.development
 .env.test
 .env.production
-.env.example
+.env.local
+.env.*.local
+# Keep .env.example
+!.env.example
 
-# temp directory
-.temp
-.tmp
+# IDE & System
+.vscode/
+.idea/
+*.swp
+.DS_Store
+*.tsbuildinfo
 
 # Vercel
-.vercel
+.vercel/
 
-# Scripts
+# Project Specific
 generate-credentials.js
 api/debug_pagination.js
