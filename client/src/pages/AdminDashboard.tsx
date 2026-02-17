@@ -6,9 +6,10 @@ import { BookFormData } from '../schemas';
 import {
     Box, Typography, Button, Container, Pagination,
     Dialog, DialogTitle, DialogContent,
-    Alert, CircularProgress, Snackbar
+    Alert, CircularProgress, Snackbar, Paper
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 const AdminDashboard = () => {
     const [books, setBooks] = useState([]);
@@ -110,39 +111,84 @@ const AdminDashboard = () => {
     };
 
     return (
-        <Container sx={{ mt: 4, mb: 4 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-                <Typography variant="h4">Admin Dashboard</Typography>
-                <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpen()}>
-                    Add New Book
+        <Container sx={{ mt: 5, mb: 10 }}>
+            <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                mb: 4,
+                p: 3, 
+                bgcolor: 'background.paper', 
+                borderRadius: 3,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+            }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ p: 1, borderRadius: 2, bgcolor: 'primary.lighter', color: 'primary.main' }}>
+                        <DashboardIcon fontSize="large" />
+                    </Box>
+                    <Box>
+                        <Typography variant="h4" fontWeight={700}>Dashboard</Typography>
+                        <Typography variant="body2" color="text.secondary">Manage your library inventory</Typography>
+                    </Box>
+                </Box>
+                <Button 
+                    variant="contained" 
+                    startIcon={<AddIcon />} 
+                    onClick={() => handleOpen()}
+                    sx={{ px: 3, py: 1.5, borderRadius: 2 }}
+                >
+                    Add Book
                 </Button>
             </Box>
 
             {success && <Snackbar open autoHideDuration={6000} onClose={() => setSuccess(null)} message={success} />}
 
             {loading ? (
-                <CircularProgress />
+                <Box sx={{ display: 'flex', justifyItems: 'center', mt: 10 }}>
+                     <CircularProgress />
+                </Box>
             ) : (
-                <>
+                <Paper elevation={0} sx={{ 
+                    borderRadius: 3, 
+                    overflow: 'hidden', 
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+                    border: '1px solid rgba(0,0,0,0.05)'
+                }}>
                     <BookTable books={books} onEdit={handleOpen} onDelete={handleDelete} />
-                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                        <Pagination count={totalPages} page={page} onChange={(e, v) => setPage(v)} color="primary" />
+                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3, borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+                        <Pagination 
+                            count={totalPages} 
+                            page={page} 
+                            onChange={(e, v) => setPage(v)} 
+                            color="primary" 
+                            shape="rounded"
+                        />
                     </Box>
-                </>
+                </Paper>
             )}
 
             {/* Add/Edit Dialog */}
-            <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-                <DialogTitle>{isEdit ? 'Edit Book' : 'Add New Book'}</DialogTitle>
+            <Dialog 
+                open={open} 
+                onClose={handleClose} 
+                maxWidth="md" 
+                fullWidth
+                PaperProps={{
+                    sx: { borderRadius: 3, p: 1 }
+                }}
+            >
+                <DialogTitle sx={{ fontWeight: 700, fontSize: '1.5rem', pb: 1 }}>
+                    {isEdit ? 'Edit Book Details' : 'Add New Book'}
+                </DialogTitle>
                 <DialogContent>
-                    {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                    {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>}
                     
                     {/* Render Form only when open to reset state properly or pass key */}
                     {open && (
                         <BookForm 
                             defaultValues={currentBook} 
                             onSubmit={handleFormSubmit}
-                            submitLabel={isEdit ? 'Update' : 'Create'}
+                            submitLabel={isEdit ? 'Update Book' : 'Add Book'}
                         />
                     )}
                 </DialogContent>
