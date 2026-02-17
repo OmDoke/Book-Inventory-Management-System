@@ -8,11 +8,11 @@ interface BooksResponse {
     currentPage: number;
 }
 
-export const useBooks = (page: number, limit: number = 12) => {
+export const useBooks = (page: number, limit: number = 12, search: string = '') => {
     return useQuery({
-        queryKey: ['books', page, limit],
+        queryKey: ['books', page, limit, search],
         queryFn: async () => {
-            const response = await getBooks(page, limit);
+            const response = await getBooks(page, limit, search);
             return response.data as BooksResponse;
         },
         placeholderData: (previousData) => previousData, // Keep previous data while fetching new page

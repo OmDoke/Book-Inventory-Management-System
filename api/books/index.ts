@@ -11,10 +11,21 @@ export default async function handler(req, res) {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 12;
+            const search = req.query.search || '';
             const skip = (page - 1) * limit;
 
-            const totalBooks = await Book.countDocuments({});
-            const books = await Book.find({})
+            const query: any = {};
+            if (search) {
+                const searchRegex = new RegExp(search, 'i');
+                query.$or = [
+                    { title: searchRegex },
+                    { author: searchRegex },
+                    { isbn: searchRegex },
+                ];
+            }
+
+            const totalBooks = await Book.countDocuments(query);
+            const books = await Book.find(query)
                 .sort({ createdAt: -1, _id: 1 })
                 .skip(skip)
                 .limit(limit);

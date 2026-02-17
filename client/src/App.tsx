@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useBooks } from './hooks/useBooks';
-import { Container, AppBar, Toolbar, Typography, Button, Box, useTheme, useMediaQuery } from '@mui/material';
+import { Container, AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import Home from './pages/Home';
 import BookDetails from './pages/BookDetails';
 import AdminLogin from './pages/AdminLogin';
@@ -20,9 +20,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 function App() {
     const [page, setPage] = useState<number>(1);
-    const { data: responseData, isLoading: loading, error, isError } = useBooks(page);
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [search, setSearch] = useState<string>('');
+    const { data: responseData, isLoading: loading, error, isError } = useBooks(page, 12, search);
 
     const books = responseData?.data || [];
     const totalPages = responseData?.totalPages || 1;
@@ -72,6 +71,8 @@ function App() {
                                     page={page}
                                     setPage={setPage}
                                     totalPages={totalPages}
+                                    search={search}
+                                    setSearch={setSearch}
                                 />
                             }
                         />
