@@ -33,6 +33,7 @@ api.interceptors.response.use((response: AxiosResponse) => response, (error: Axi
 });
 
 export const getBooks = (page: number = 1, limit: number = 12, search: string = '') => api.get(`/books?page=${page}&limit=${limit}&search=${search}`);
+export const searchBooksByAI = (query: string) => api.post(`/search`, { query });
 export const getBook = (id: string) => api.get(`/books/${id}`);
 export const loginAdmin = (credentials: any) => api.post('/admin/login', credentials);
 export const createBook = (data: any) => api.post('/books', data);

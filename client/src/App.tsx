@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-ro
 import { useState } from 'react';
 import { useBooks } from './hooks/useBooks';
 import { Container, AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import { useAISearch } from './hooks/useAISearch';
 import Home from './pages/Home';
 import BookDetails from './pages/BookDetails';
 import AdminLogin from './pages/AdminLogin';
@@ -22,12 +23,19 @@ function App() {
     const [page, setPage] = useState<number>(1);
     const [search, setSearch] = useState<string>('');
     const { data: responseData, isLoading: loading, error, isError } = useBooks(page, 12, search);
+    const { mutate: performAiSearch, data: aiResponse, isPending: aiSearchLoading } = useAISearch();
+    const [aiSearchMode, setAiSearchMode] = useState(false);
 
     const books = responseData?.data || [];
     const totalPages = responseData?.totalPages || 1;
+    const aiSearchResults = aiResponse?.results || null;
 
     // Error handling is now managed by React Query's error state
     const errorMessage = isError ? (error as Error).message : null;
+
+    const handleAiSearch = (query: string) => {
+        performAiSearch(query);
+    };
 
     return (
         <Router>
@@ -73,6 +81,11 @@ function App() {
                                     totalPages={totalPages}
                                     search={search}
                                     setSearch={setSearch}
+                                    aiSearchMode={aiSearchMode}
+                                    setAiSearchMode={setAiSearchMode}
+                                    aiSearchResults={aiSearchResults}
+                                    aiSearchLoading={aiSearchLoading}
+                                    handleAiSearch={handleAiSearch}
                                 />
                             }
                         />
