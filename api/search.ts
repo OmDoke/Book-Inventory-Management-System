@@ -45,7 +45,15 @@ const serviceSearchBook = async (title?: string | null, authorName?: string | nu
     }
 
     if (overview) {
-        queryCond["overview"] = { $regex: overview, $options: "i" };
+        // Break overview search into individual keywords so 'maratha panipat' 
+        // matches 'overview: ... battle of Panipat and Maratha ...'
+        const keywords = overview.trim().split(/\s+/);
+        if (keywords.length > 0) {
+            queryCond["$and"] = queryCond["$and"] || [];
+            keywords.forEach(kw => {
+                queryCond["$and"].push({ "overview": { $regex: kw, $options: "i" } });
+            });
+        }
     }
 
     if (price) {
