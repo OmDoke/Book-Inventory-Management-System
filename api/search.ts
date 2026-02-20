@@ -83,7 +83,7 @@ const searchBooksTool = tool(
         name: "searchBooks",
         description: "Search for books by title, authorName, genre, publisher & publishedDate year",
         schema: z.object({
-            title: z.string().optional().describe("The title of the book to search for"),
+            title: z.string().optional().describe("The title of the book to search for. ONLY return a string, never an object."),
             authorName: z.string().optional().describe("The author name of the book to search for"),
             genre: z.string().optional().describe("The genre of the book to search for"),
             publisher: z.string().optional().describe("The publisher of the book to search for"),
@@ -119,6 +119,7 @@ export default async function handler(req: any, res: any) {
             apiKey: process.env.GROQ_API_KEY,
             model: "llama-3.1-8b-instant",
             maxRetries: 2,
+            temperature: 0,
         });
 
         const tools = Object.values(toolsByName);
@@ -141,13 +142,13 @@ export default async function handler(req: any, res: any) {
                         After receiving tool results, you MUST immediately return the final JSON response.
                         Do NOT call another tool.
                         Do NOT perform multi-step reasoning.
-                    2. You must return ONLY ONE JSON object.
+                    2. You must return ONLY ONE valid JSON object.
                     3. You must return results for type: "book".
                     4. Never return multiple JSON objects.
-                    5. Never return text, explanation, or markdown.
-                    6. Output must be valid JSON in this exact structure.
+                    5. Never return text, explanation, or markdown formatting like \`\`\`json.
+                    6. The output must be perfectly valid JSON (NO trailing commas).
 
-                    Response format:
+                    Required Exact JSON format:
                     {
                         "status": "success" | "fail",
                         "intent": "search",
