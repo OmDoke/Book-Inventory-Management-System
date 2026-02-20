@@ -1,6 +1,6 @@
 import dbConnect from './_lib/db.js';
 import Book from './_lib/models/book.js';
-import { ChatOpenAI } from "@langchain/openai";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import {
     StateGraph,
     StateSchema,
@@ -115,10 +115,10 @@ export default async function handler(req: any, res: any) {
             return res.status(400).json({ message: 'Query is required in request body' });
         }
 
-        const model = new ChatOpenAI({
-            apiKey: process.env.OPENAI_API_KEY,
-            model: "gpt-3.5-turbo", // adjusted for free tier
-            modelKwargs: { response_format: { type: "json_object" } } // forces JSON       
+        const model = new ChatGoogleGenerativeAI({
+            apiKey: process.env.GEMINI_API_KEY,
+            model: "gemini-1.5-pro",
+            maxRetries: 2,
         });
 
         const tools = Object.values(toolsByName);

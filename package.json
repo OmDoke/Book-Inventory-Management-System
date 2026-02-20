@@ -10,6 +10,7 @@
     },
     "dependencies": {
         "@langchain/core": "*",
+        "@langchain/google-genai": "^2.1.19",
         "@langchain/langgraph": "*",
         "@langchain/openai": "*",
         "bcryptjs": "^2.4.3",
@@ -21,12 +22,12 @@
         "zod": "^3.23.8"
     },
     "devDependencies": {
-        "typescript": "^5.5.0",
-        "@types/node": "^20.0.0",
-        "@types/express": "^4.17.21",
-        "@types/mongoose": "^5.11.97",
         "@types/bcryptjs": "^2.4.6",
+        "@types/cors": "^2.8.17",
+        "@types/express": "^4.17.21",
         "@types/jsonwebtoken": "^9.0.6",
-        "@types/cors": "^2.8.17"
+        "@types/mongoose": "^5.11.97",
+        "@types/node": "^20.0.0",
+        "typescript": "^5.5.0"
     }
 }
