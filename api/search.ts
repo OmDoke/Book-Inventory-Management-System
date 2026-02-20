@@ -12,7 +12,7 @@ import { AIMessage, HumanMessage, SystemMessage, ToolMessage } from "@langchain/
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
-const serviceSearchBook = async (title?: string | null, authorName?: string | null, genre?: string | null, publisher?: string | null, publishedDate?: any) => {
+const serviceSearchBook = async (title?: string | null, authorName?: string | null, genre?: string | null, publisher?: string | null, overview?: string | null, price?: any, stockCount?: any, publishedDate?: any) => {
     let queryCond: any = {};
 
     if (title) {
@@ -44,6 +44,28 @@ const serviceSearchBook = async (title?: string | null, authorName?: string | nu
         }
     }
 
+    if (overview) {
+        queryCond["overview"] = { $regex: overview, $options: "i" };
+    }
+
+    if (price) {
+        let priceCond: any = {};
+        if (price.min !== undefined) priceCond.$gte = price.min;
+        if (price.max !== undefined) priceCond.$lte = price.max;
+        if (Object.keys(priceCond).length > 0) {
+            queryCond["price"] = priceCond;
+        }
+    }
+
+    if (stockCount) {
+        let stockCond: any = {};
+        if (stockCount.min !== undefined) stockCond.$gte = stockCount.min;
+        if (stockCount.max !== undefined) stockCond.$lte = stockCount.max;
+        if (Object.keys(stockCond).length > 0) {
+            queryCond["stockCount"] = stockCond;
+        }
+    }
+
     console.log(`serviceSearchBook - Query: ${JSON.stringify(queryCond)}`);
 
     const assets = await Book.find(queryCond).sort({ publishedDate: -1 }).limit(10).lean();
@@ -68,6 +90,7 @@ const serviceSearchBook = async (title?: string | null, authorName?: string | nu
             publisher: asset.publisher,
             genre: asset.genre,
             price: asset.price,
+            stockCount: asset.stockCount,
             overview: asset.overview,
             posterUrl: asset.posterUrl,
         }))
@@ -75,9 +98,9 @@ const serviceSearchBook = async (title?: string | null, authorName?: string | nu
 };
 
 const searchBooksTool = tool(
-    async ({ title, authorName, genre, publisher, publishedDate }) => {
-        console.log(`Tool searchBooks called with: ${JSON.stringify({ title, authorName, genre, publisher, publishedDate })}`);
-        return await serviceSearchBook(title, authorName, genre, publisher, publishedDate);
+    async ({ title, authorName, genre, publisher, overview, price, stockCount, publishedDate }) => {
+        console.log(`Tool searchBooks called with: ${JSON.stringify({ title, authorName, genre, publisher, overview, price, stockCount, publishedDate })}`);
+        return await serviceSearchBook(title, authorName, genre, publisher, overview, price, stockCount, publishedDate);
     },
     {
         name: "searchBooks",
@@ -87,6 +110,15 @@ const searchBooksTool = tool(
             authorName: z.string().optional().describe("The author name of the book to search for"),
             genre: z.string().optional().describe("The genre of the book to search for"),
             publisher: z.string().optional().describe("The publisher of the book to search for"),
+            overview: z.string().optional().describe("Keywords in the book overview or plot"),
+            price: z.object({
+                min: z.number().optional().describe("Minimum price"),
+                max: z.number().optional().describe("Maximum price")
+            }).optional().describe("Price range of the book"),
+            stockCount: z.object({
+                min: z.number().optional().describe("Minimum stock available"),
+                max: z.number().optional().describe("Maximum stock available")
+            }).optional().describe("Stock count range for the book"),
             publishedDate: z.object(
                 {
                     from: z.number().optional().describe("Start year (e.g., 2015)"),
@@ -162,6 +194,7 @@ export default async function handler(req: any, res: any) {
                             "publisher": string,
                             "genre": string,
                             "price": number,
+                            "stockCount": number,
                             "overview": string,
                             "posterUrl": string
                         }]
