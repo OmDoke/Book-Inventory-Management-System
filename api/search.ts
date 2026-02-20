@@ -46,12 +46,17 @@ const serviceSearchBook = async (title?: string | null, authorName?: string | nu
 
     if (overview) {
         // Break overview search into individual keywords so 'maratha panipat' 
-        // matches 'overview: ... battle of Panipat and Maratha ...'
+        // matches across title OR overview
         const keywords = overview.trim().split(/\s+/);
         if (keywords.length > 0) {
             queryCond["$and"] = queryCond["$and"] || [];
             keywords.forEach(kw => {
-                queryCond["$and"].push({ "overview": { $regex: kw, $options: "i" } });
+                queryCond["$and"].push({
+                    $or: [
+                        { "overview": { $regex: kw, $options: "i" } },
+                        { "title": { $regex: kw, $options: "i" } }
+                    ]
+                });
             });
         }
     }

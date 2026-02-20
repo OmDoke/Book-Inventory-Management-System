@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useBooks } from './hooks/useBooks';
+import { useDebounce } from './hooks/useDebounce';
 import { Container, AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { useAISearch } from './hooks/useAISearch';
 import Home from './pages/Home';
@@ -22,7 +23,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 function App() {
     const [page, setPage] = useState<number>(1);
     const [search, setSearch] = useState<string>('');
-    const { data: responseData, isLoading: loading, error, isError } = useBooks(page, 12, search);
+    const debouncedSearch = useDebounce(search, 500);
+    const { data: responseData, isLoading: loading, error, isError } = useBooks(page, 12, debouncedSearch);
     const { mutate: performAiSearch, data: aiResponse, isPending: aiSearchLoading } = useAISearch();
     const [aiSearchMode, setAiSearchMode] = useState(false);
 
