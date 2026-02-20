@@ -117,7 +117,7 @@ export default async function handler(req: any, res: any) {
 
         const model = new ChatGoogleGenerativeAI({
             apiKey: process.env.GEMINI_API_KEY,
-            model: "gemini-1.5-pro",
+            model: "gemini-1.5-flash",
             maxRetries: 2,
         });
 
