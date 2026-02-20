@@ -1,6 +1,6 @@
 import dbConnect from './_lib/db.js';
 import Book from './_lib/models/book.js';
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { ChatGroq } from "@langchain/groq";
 import {
     StateGraph,
     StateSchema,
@@ -115,9 +115,9 @@ export default async function handler(req: any, res: any) {
             return res.status(400).json({ message: 'Query is required in request body' });
         }
 
-        const model = new ChatGoogleGenerativeAI({
-            apiKey: process.env.GEMINI_API_KEY,
-            model: "gemini-2.0-flash",
+        const model = new ChatGroq({
+            apiKey: process.env.GROQ_API_KEY,
+            model: "llama-3.1-8b-instant",
             maxRetries: 2,
         });
 
