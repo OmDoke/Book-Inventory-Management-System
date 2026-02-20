@@ -117,7 +117,7 @@ export default async function handler(req: any, res: any) {
 
         const model = new ChatOpenAI({
             apiKey: process.env.OPENAI_API_KEY,
-            model: "gpt-4o-mini", // recommended newer model     
+            model: "gpt-3.5-turbo", // adjusted for free tier
             modelKwargs: { response_format: { type: "json_object" } } // forces JSON       
         });
 
