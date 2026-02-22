@@ -3,6 +3,8 @@ import { Book } from '../types';
 import { Grid, Typography, Pagination, Box, CircularProgress, Alert, Divider, TextField, InputAdornment, Button, Tooltip, Chip } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { useEffect } from 'react';
+import { useDebounce } from '../hooks/useDebounce';
 
 interface HomeProps {
     books: Book[];
@@ -25,6 +27,14 @@ const Home = ({ books, loading, error, page, setPage, totalPages, search, setSea
     const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
+
+    const debouncedAiSearch = useDebounce(search, 1000);
+
+    useEffect(() => {
+        if (aiSearchMode && debouncedAiSearch.trim()) {
+            handleAiSearch(debouncedAiSearch);
+        }
+    }, [debouncedAiSearch, aiSearchMode, handleAiSearch]);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(event.target.value);
